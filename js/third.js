@@ -7,65 +7,30 @@ const formBtn = itemForm.querySelector('button');
 
 const addItem = (e) => {
   e.preventDefault();
-
   const newItem = itemInput.value;
-  if (newItem === '') {
-    alert('Please add an item');
-    return;
-  }
 
   const li = document.createElement('li');
-  li.appendChild(document.createTextNode(newItem));
-  const button = createButton('remove-item btn-link text-red');
+  li.innerText = newItem;
+  // li.appendChild(document.createTextNode(newItem))
 
-  li.appendChild(button);
-
-  // add to the dom
-  itemList.appendChild(li);
-
-  itemInput.value = '';
-
-  resetUI()
-};
-
-const createButton = (classes) => {
   const button = document.createElement('button');
-  button.className = classes;
+  button.classList = 'remove-item btn-link text-red';
   const icon = document.createElement('i');
   icon.classList = 'fa-solid fa-xmark';
 
   button.appendChild(icon);
+  li.appendChild(button);
+  itemList.appendChild(li);
 
-  return button;
+  itemInput.value = '';
 };
-
-const removeItem = (e) => {
-  if (e.target.parentElement.classList.contains('remove-item')) {
-    if (confirm('Are you sure?')) {
-      e.target.parentElement.parentElement.remove();
-    }
-    resetUI()
-  }
-};
-
-const clearItem = () => {
-  // itemList.innerHTML = ''
-  if (confirm('Are you sure?')) {
-    while (itemList.firstChild) {
-      itemList.removeChild(itemList.firstChild);
-    }
-  }
-  resetUI()
-};
-
 
 const filterItem = (e) => {
   const items = itemList.querySelectorAll('li');
   const text = e.target.value.toLowerCase();
 
   items.forEach((item) => {
-    const itemName = item.firstChild.textContent.toLowerCase();
-    // const itemName = item.innerText;
+    const itemName = item.innerText.toLowerCase();
 
     if (itemName.includes(text)) {
       item.style.display = 'flex';
@@ -75,23 +40,39 @@ const filterItem = (e) => {
   });
 };
 
-const resetUI = () => {
-  const items = itemList.querySelectorAll('li');
- 
-  if (items.length === 0) {
-    itemFilter.style.display = 'none';
-    clearBtn.style.display = 'none'
-  } else {
-    itemFilter.style.display = 'block';
-    clearBtn.style.display = 'block';
+const removeItem = (e) => {
+  if (e.target.parentElement.classList.contains('remove-item')) {
+    confirm('Are you sure');
+    e.target.parentElement.parentElement.remove();
+    resetUI();
   }
-}
+};
 
+const clearAll = () => {
+  confirm('Are you sure?');
+  // itemList.innerHTML = ''
+  while (itemList.firstChild) {
+    itemList.removeChild(itemList.firstChild);
+    resetUI();
+  }
+};
+
+const resetUI = (e) => {
+  const item = itemList.querySelectorAll('li');
+
+  if (item.length === 0) {
+    clearBtn.style.display = 'none';
+    itemFilter.style.display = 'none';
+  } else {
+    clearBtn.style.display = 'block';
+    itemFilter.style.display = 'block';
+  }
+};
 
 // add event listener
 itemForm.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
-clearBtn.addEventListener('click', clearItem);
+clearBtn.addEventListener('click', clearAll);
 itemFilter.addEventListener('input', filterItem);
 
 resetUI();
