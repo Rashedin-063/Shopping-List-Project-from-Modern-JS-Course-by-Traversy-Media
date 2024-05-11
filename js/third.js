@@ -5,10 +5,29 @@ const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 const formBtn = itemForm.querySelector('button');
 
-const addItem = (e) => {
+function displayItems() {
+  const itemFromStorage = getItemFromLocalStorage();
+
+  itemFromStorage.forEach((item) => {
+    mainFunction(item);
+  });
+  resetUI();
+}
+
+const mainFunction = (e) => {
   e.preventDefault();
   const newItem = itemInput.value;
 
+  // add new item
+  mainFunction(newItem);
+
+  // add to the local storage
+  addItemToLocalStorage(newItem);
+
+  itemInput.value = '';
+};
+
+function mainFunction(newItem) {
   const li = document.createElement('li');
   li.innerText = newItem;
   // li.appendChild(document.createTextNode(newItem))
@@ -21,9 +40,27 @@ const addItem = (e) => {
   button.appendChild(icon);
   li.appendChild(button);
   itemList.appendChild(li);
+}
 
-  itemInput.value = '';
-};
+function addItemToLocalStorage(newItem) {
+  const localStorageItems = getItemFromLocalStorage();
+
+  localStorageItems.push(newItem);
+
+  localStorage.setItem('items', JSON.stringify(localStorageItems));
+}
+
+function getItemFromLocalStorage() {
+  let localStorageItems = [];
+
+  const storedItems = localStorage.getItem('items');
+
+  if (storedItems) {
+    localStorageItems = JSON.parse(storedItems);
+  }
+
+  return localStorageItems;
+}
 
 const filterItem = (e) => {
   const items = itemList.querySelectorAll('li');
@@ -53,8 +90,9 @@ const clearAll = () => {
   // itemList.innerHTML = ''
   while (itemList.firstChild) {
     itemList.removeChild(itemList.firstChild);
-    resetUI();
   }
+localStorage.removeItem('items')
+  resetUI();
 };
 
 const resetUI = (e) => {
@@ -70,9 +108,10 @@ const resetUI = (e) => {
 };
 
 // add event listener
-itemForm.addEventListener('submit', addItem);
+itemForm.addEventListener('submit', mainFunction);
 itemList.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearAll);
 itemFilter.addEventListener('input', filterItem);
+document.addEventListener('DOMContentLoaded', displayItems);
 
 resetUI();
